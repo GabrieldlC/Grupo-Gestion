@@ -1,5 +1,0 @@
-package conexiones
-
-func LeerDatos() {
-
-}

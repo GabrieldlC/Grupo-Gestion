@@ -5,3 +5,7 @@ Generar archivo teniendo en cuenta el modelo de la tabla, el tipo de archivo.
 Tendrá también la tabla cantidad de parámetros que serán 1 o 2 tipo fecha desde y hasta.
 En el modelo pueden estar todos o algunos atributos de la tabla y puede variar el orden.
 La query siempre tendrá el mismo select.
+
+Al seleccionar una opción del select, mostrar un calendario para poner fecha desde y/o hasta
+según si requiere 1 o 2 parámetros. Luego un botón "Generer" que traiga los datos.
+Agregar también un botón "Salir" que esté siempre disponible.

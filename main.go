@@ -10,12 +10,6 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-type Persona struct {
-	Id     string `json:"id"`
-	Nombre string `json:"nombre"`
-	Edad   string `json:"edad"`
-}
-
 func main() {
 	// Conexión a base de datos
 	oracleDB, err := conexiones.ConexionOracle()
@@ -24,15 +18,14 @@ func main() {
 	}
 	defer oracleDB.Close()
 
-	// Obtener el proceso
-	proceso, err := acciones.ObtenerProceso(oracleDB)
+	// Obtener los procesos
+	procesos, err := acciones.ObtenerProceso(oracleDB)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	// Imprimir información del proceso
-	fmt.Printf("ID proceso: %d\nQuery: %sNombre: %s\nFormato de salida: %s\nArchivo modelo: %s\nCantidad de fechas: %d\n\n",
-		proceso.IDProceso, proceso.Query, proceso.Nombre, proceso.FormatoSalida, proceso.ArchivoModelo, proceso.CantFechas)
+	// App de Fyne
+	proceso := acciones.GenerarVista(procesos)
 
 	desde := "20230101"
 	hasta := "20230131"
@@ -45,7 +38,7 @@ func main() {
 
 	// Imprimir información de los comprobantes
 	for _, comprobante := range comprobantes {
-		fmt.Printf("Empresa: %s\nFactura: %s\nTotal: %d\nIva: %d\nFinal: %d\nFecha: %s\n\n",
+		fmt.Printf("\nEmpresa: %s\nFactura: %s\nTotal: %d\nIva: %d\nFinal: %d\nFecha: %s\n",
 			comprobante.Empresa, comprobante.Factura, comprobante.Total, comprobante.Iva, comprobante.Final, comprobante.Fecha)
 	}
 	// Leer archivo json
