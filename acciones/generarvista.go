@@ -1,12 +1,15 @@
 package acciones
 
 import (
+	"Nueva/calendar"
 	"Nueva/modelos"
-	"fmt"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -16,36 +19,53 @@ func GenerarVista(procesos []modelos.Proceso) modelos.Proceso {
 	myWindow.Resize(fyne.NewSize(400, 400))
 
 	var nombres []string
-	nombres = append(nombres, "(Seleccione)")
 	for _, proceso := range procesos {
 		nombres = append(nombres, proceso.Nombre)
 	}
 
 	var selectedProcess modelos.Proceso
 
-	baseSelect := widget.NewSelect(nombres, func(s string) {
-		if s == "(Seleccione)" {
-			return
-		}
+	var desde, hasta time.Time
+
+	desdeW := calendar.CalendarWidget(myWindow, "Eija fecha desde", &desde)
+	hastaW := calendar.CalendarWidget(myWindow, "Eija fecha hasta", &hasta)
+
+	desdeW.Hide()
+	hastaW.Hide()
+
+	procesoSelect := widget.NewSelect(nombres, func(nombre string) {
+		desdeW.Show()
 		for _, proceso := range procesos {
-			if proceso.Nombre == s {
-				fmt.Println("Proceso seleccionado:", s)
+			if proceso.Nombre == nombre {
 				selectedProcess = proceso
+				if proceso.CantFechas > 1 {
+					hastaW.Show()
+				} else {
+					hastaW.Hide()
+				}
 				break
 			}
 		}
 	})
+	procesoSelect.PlaceHolder = "Seleccione"
 
-	tituloLista := widget.NewLabel("Procesos")
-
-	baseSelect.SetSelected("(Seleccione)")
-
+	tituloLista := widget.NewLabel("Proceso:")
 	selectContainer := container.NewVBox(
 		tituloLista,
-		baseSelect,
+		procesoSelect,
 	)
 
-	myWindow.SetContent(selectContainer)
+	btnSalir := widget.NewButtonWithIcon("Salir", theme.CancelIcon(), func() { myApp.Quit() })
+
+	layoutContainer := container.NewBorder(
+		container.NewGridWithRows(2, selectContainer,
+			container.NewGridWithColumns(2, desdeW, hastaW)),
+		container.NewHBox(layout.NewSpacer(), btnSalir),
+		nil,
+		nil,
+	)
+
+	myWindow.SetContent(layoutContainer)
 	myWindow.ShowAndRun()
 
 	return selectedProcess
